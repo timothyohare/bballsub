@@ -1,4 +1,6 @@
 bballsub
 ========
 
-Basketball sub HTML5 application
+Basketball substitute HTML5 application
+
+![Screenshot of application](https://github.com/timothyohare/bballsub/blob/master/screenshot-20140803.png)
