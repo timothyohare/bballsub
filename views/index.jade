@@ -1,0 +1,66 @@
+extends layout
+
+block content
+  h1= title
+  p Welcome to #{title}
+  table
+    tr
+      th On
+      th Name
+      th Off
+    each name in ["Julia", "Tegan", "Zahli", "Abbey", "Irene", "Joven", "Isabella", "Emily"]
+      tr(id=name)
+        td
+          //-button= (type="button" onclick="actionOn("+ name + ")") On
+          button(type="button" 
+            id= "button" + name + "On"
+            onclick="actionOn(\""+ name +"\")") On
+        td= name
+        td
+          //-button= (type="button" onclick="actionOff("+ name + ")") Off
+          //-button(type="button" onclick="actionOff()") Off
+          button(type="button" 
+            id= "button" + name + "Off"
+            onclick="actionOff(\""+ name +"\")") Off
+
+  script.
+    function actionOn(name) {
+        console.log("actionOn: " + name);
+
+        // get references to both buttons
+        var onButton = document.getElementById("button" + name + "On");
+        var offButton = document.getElementById("button" + name + "Off");
+
+        // set the style
+        onButton.style.backgroundColor = "red";
+        offButton.style.backgroundColor = "green";
+
+        // enable/disable the buttons
+        onButton.enabled = false;
+        offButton.enabled = true;
+
+        // save details in session storage
+        //sessionStorage.name = Date();
+        //var personObject = {'name': name, 'timeOn': Date()};
+        // Store the object as a JSON String
+        //localStorage.setItem('testObject', JSON.stringify(personObject));
+    }
+
+    function actionOff(name) {
+        console.log("actionOff: " + name);
+               // get references to both buttons
+        var onButton = document.getElementById("button" + name + "On");
+        var offButton = document.getElementById("button" + name + "Off");
+
+        // set the style
+        onButton.style.backgroundColor = "green";
+        offButton.style.backgroundColor = "red";
+
+        // enable/disable the buttons
+        onButton.enabled = true;
+        offButton.enabled = false;
+
+        // save details in session storage
+        //sessionStorage.name = Date();
+        //sessionStorage.
+    }
