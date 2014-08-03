@@ -13,5 +13,22 @@
     "body-parser": "~1.0.0",
     "debug": "~0.7.4",
     "jade": "~1.3.0"
-  }
+  },
+  "description": "Basketball Subsitution",
+  "main": "app.js",
+  "devDependencies": {},
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/timothyohare/bballsub.git"
+  },
+  "keywords": [
+    "basketball",
+    "subsitution"
+  ],
+  "author": "Timothy O'Hare",
+  "license": "Apache",
+  "bugs": {
+    "url": "https://github.com/timothyohare/bballsub/issues"
+  },
+  "homepage": "https://github.com/timothyohare/bballsub"
 }
