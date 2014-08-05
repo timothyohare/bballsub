@@ -3,6 +3,8 @@ extends layout
 block content
   h1= title
   p Welcome to #{title}
+  button(onclick='sortTeam()') SortTeam
+  button(onclick='createButtons()') CreateButtons
   table
     tr
       th On
@@ -22,6 +24,9 @@ block content
           button(type="button" 
             id= "button" + name + "Off"
             onclick="actionOff(\""+ name +"\")") Off
+  div(id="buttonDiv")
+
+  script(src="//ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js")
 
   script.
     function actionOn(name) {
@@ -63,4 +68,80 @@ block content
         // save details in session storage
         //sessionStorage.name = Date();
         //sessionStorage.
+    }
+
+    var team1 =
+    {
+    "team": [
+        {
+            "name": "Julia",
+            "away": false,
+            "currentlyPlaying": false,
+            "totalPlayingTime": 5
+        },
+        {
+            "name": "Tegan",
+            "away": false,
+            "currentlyPlaying": true,
+            "totalPlayingTime": 6
+        },
+        {
+            "name": "Emily",
+            "away": false,
+            "currentlyPlaying": true,
+            "totalPlayingTime": 4
+        },
+        {
+            "name": "Isabella",
+            "away": true,
+            "currentlyPlaying": false,
+            "totalPlayingTime": 0
+        }
+            ]
+    };
+
+    function sortTeam() {
+    
+
+      team1.team.sort(function(a, b)
+      {
+        if (a.away > b.away) {
+          return true;
+        } else if (b.away > a.away) {
+         return false;
+        } else if (a.currentlyPlaying > b.currentlyPlaying) {
+          return true;
+        } else if (b.currentlyPlaying > a.currentlyPlaying) {
+         return false;
+        } else if (a.totalPlayingTime > b.totalPlayingTime) {
+          return true;
+        } else if (b.totalPlayingTime > a.totalPlayingTime) {
+         return false;
+        }
+      });
+
+      console.log(team1);
+    }
+
+    function createButtons() {
+        sortTeam();
+        for (i = 0; i < team1.team.length; i++) {
+            if (team1.team[i].currentlyPlaying) {
+                //button(type="button" id= "button" + team1[i].name + "Off" onclick="actionOff(\""+ team1[i].name +"\")") team1[i].name
+                //var playButton = document.createElement('button');
+                //playButton.setAttribute('type','button');
+                //playButton.setAttribute('id',"button" + team1[i].name + "Off");
+                //playButton.setAttribute('value',team1[i].name);
+                //playButton.attachEvent('onclick',"actionOff(\""+ team1[i].name +"\")");
+
+                $("#buttonDiv") 
+                    .append("<input type=\"button\" value=" + team1.team[i].name + ">")
+                    .click( actionOff ); // Add a click handler
+                
+
+                //var buttonDiv = document.getElementById("buttonDiv")
+                //buttonDiv.appendChild(playButton);
+                //$( "buttonDiv" ).append(playButton)
+            }
+        } 
     }
