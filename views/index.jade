@@ -1,33 +1,44 @@
-extends layout
-
-block content
+doctype html
+html
+  head
+    title= title
+    link(rel='stylesheet', href='/stylesheets/style.css')
+    //link(rel='stylesheet', href="//ajax.googleapis.com/ajax/libs/jquerymobile/1.4.3/jquery.mobile.min.css")
+    link(rel='stylesheet', href="http://code.jquery.com/mobile/1.4.3/jquery.mobile-1.4.3.min.css")
+    script(src="http://code.jquery.com/jquery-1.11.1.min.js")
+    script(src="http://code.jquery.com/mobile/1.4.3/jquery.mobile-1.4.3.min.js")
+body(onload='createButtons()')
   h1= title
   p Welcome to #{title}
-  button(onclick='sortTeam()') SortTeam
-  button(onclick='createButtons()') CreateButtons
-  table
-    tr
-      th On
-      th Name
-      th Off
-    each name in ["Julia", "Tegan", "Zahli", "Abbey", "Irene", "Joven", "Isabella", "Emily"]
-      tr(id=name)
-        td
-          //-button= (type="button" onclick="actionOn("+ name + ")") On
-          button(type="button" 
-            id= "button" + name + "On"
-            onclick="actionOn(\""+ name +"\")") On
-        td= name
-        td
-          //-button= (type="button" onclick="actionOff("+ name + ")") Off
-          //-button(type="button" onclick="actionOff()") Off
-          button(type="button" 
-            id= "button" + name + "Off"
-            onclick="actionOff(\""+ name +"\")") Off
-  div(id="buttonDiv")
+  //button(onclick='sortTeam()') SortTeam
+  //button(onclick='createButtons()') CreateButtons
+  // table
+  //  tr
+  //    th On
+  //    th Name
+  //    th Off
+  //  each name in ["Julia", "Tegan", "Zahli", "Abbey", "Irene", "Joven", "Isabella", "Emily"]
+  //    tr(id=name)
+  //      td
+  //       //-button= (type="button" onclick="actionOn("+ name + ")") On
+  //        button(type="button" 
+  //          id= "button" + name + "On"
+  //          onclick="actionOn(\""+ name +"\")") On
+  //      td= name
+  //      td
+  //        //-button= (type="button" onclick="actionOff("+ name + ")") Off
+  //        //-button(type="button" onclick="actionOff()") Off
+  //        button(type="button" 
+  //          id= "button" + name + "Off"
+  //          onclick="actionOff(\""+ name +"\")") Off
+  
+  div(id="buttonDiv" class="ui-content")
 
-  script(src="//ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js")
 
+  //script(src="//ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js")
+  //script(src="//ajax.googleapis.com/ajax/libs/jquerymobile/1.4.3/jquery.mobile.min.js")
+  
+  
   script.
     function actionOn(name) {
         console.log("actionOn: " + name);
@@ -51,10 +62,11 @@ block content
         //localStorage.setItem('testObject', JSON.stringify(personObject));
     }
 
-    function actionOff(name) {
-        console.log("actionOff: " + name);
+    var actionOffFunction = function actionOff(event) {
+        console.log("actionOff: " + event.data.name);
+        //event.stopPropagation();
                // get references to both buttons
-        var onButton = document.getElementById("button" + name + "On");
+        /*var onButton = document.getElementById("button" + name + "On");
         var offButton = document.getElementById("button" + name + "Off");
 
         // set the style
@@ -64,11 +76,11 @@ block content
         // enable/disable the buttons
         onButton.enabled = true;
         offButton.enabled = false;
-
+        */
         // save details in session storage
         //sessionStorage.name = Date();
         //sessionStorage.
-    }
+    };
 
     var team1 =
     {
@@ -134,9 +146,16 @@ block content
                 //playButton.setAttribute('value',team1[i].name);
                 //playButton.attachEvent('onclick',"actionOff(\""+ team1[i].name +"\")");
 
-                $("#buttonDiv") 
-                    .append("<input type=\"button\" value=" + team1.team[i].name + ">")
-                    .click( actionOff ); // Add a click handler
+                $("#buttonDiv")
+                    .append("<div class=\"ui-grid-d\"") 
+                    .append("<input type=\"button\" class=\"ui-btn ui-corner-all ui-shadow\" id=\"butOn" + team1.team[i].name + "\" value=" + team1.team[i].name + ">");
+                // Adding a click handler at the same time causes the click handler to be called for every
+                // button, when only one is clicked. Adding it afterwards fixes this problem.
+                    //.click({ name:  team1.team[i].name }, actionOffFunction ); // Add a click handler
+                    //.click({ name:  team1.team[i].name }, function (event) { alert (event.data.name); } ); // Add a click handler
+                    //.click(function () { alert ("1"); } );
+                $("#butOn"+ team1.team[i].name)
+                    .click({ name:  team1.team[i].name }, actionOffFunction );        
                 
 
                 //var buttonDiv = document.getElementById("buttonDiv")
@@ -145,3 +164,7 @@ block content
             }
         } 
     }
+
+    /*function actionOff() {
+        console.log("actionOff: " + this.id);
+    }*/
