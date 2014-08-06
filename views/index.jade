@@ -4,10 +4,11 @@ html
     title= title
     link(rel='stylesheet', href='/stylesheets/style.css')
     //link(rel='stylesheet', href="//ajax.googleapis.com/ajax/libs/jquerymobile/1.4.3/jquery.mobile.min.css")
+    // http://stackoverflow.com/questions/18861852/jquery-mobile-and-firefox-dont-play-well-together
     link(rel='stylesheet', href="http://code.jquery.com/mobile/1.4.3/jquery.mobile-1.4.3.min.css")
     script(src="http://code.jquery.com/jquery-1.11.1.min.js")
     script(src="http://code.jquery.com/mobile/1.4.3/jquery.mobile-1.4.3.min.js")
-body(onload='createButtons()')
+body(onload='createAndUpdateUI()')
   h1= title
   p Welcome to #{title}
   //button(onclick='sortTeam()') SortTeam
@@ -33,7 +34,12 @@ body(onload='createButtons()')
   //          onclick="actionOff(\""+ name +"\")") Off
   
   div(id="buttonDiv" class="ui-content")
-
+    div(id="buttonGrid" class="ui-grid-d")
+        div(class="ui-block-a") Playing?
+        div(class="ui-block-b") Name
+        div(class="ui-block-c") Sub1
+        div(class="ui-block-d") Sub2
+        div(class="ui-block-e") Sub3
 
   //script(src="//ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js")
   //script(src="//ajax.googleapis.com/ajax/libs/jquerymobile/1.4.3/jquery.mobile.min.js")
@@ -82,30 +88,34 @@ body(onload='createButtons()')
         //sessionStorage.
     };
 
+    var actionPlayingFunction = function actionPlaying(event) {
+        console.log("actionPlaying: " + event.data.name);
+    }
+
     var team1 =
     {
     "team": [
         {
             "name": "Julia",
-            "away": false,
+            "playing": true,
             "currentlyPlaying": false,
             "totalPlayingTime": 5
         },
         {
             "name": "Tegan",
-            "away": false,
+            "playing": true,
             "currentlyPlaying": true,
             "totalPlayingTime": 6
         },
         {
             "name": "Emily",
-            "away": false,
+            "playing": true,
             "currentlyPlaying": true,
             "totalPlayingTime": 4
         },
         {
             "name": "Isabella",
-            "away": true,
+            "playing": false,
             "currentlyPlaying": false,
             "totalPlayingTime": 0
         }
@@ -117,9 +127,9 @@ body(onload='createButtons()')
 
       team1.team.sort(function(a, b)
       {
-        if (a.away > b.away) {
+        if (a.playing > b.playing) {
           return true;
-        } else if (b.away > a.away) {
+        } else if (b.playing > a.playing) {
          return false;
         } else if (a.currentlyPlaying > b.currentlyPlaying) {
           return true;
@@ -135,9 +145,88 @@ body(onload='createButtons()')
       console.log(team1);
     }
 
-    function createButtons() {
+    function createAndUpdateUI() {
+        "use strict";
         sortTeam();
-        for (i = 0; i < team1.team.length; i++) {
+        var team = team1.team
+        for (var i = 0; i < team.length; i++) {
+            // TODO grid layout http://api.jquerymobile.com/grid-layout/
+            
+            // first column is the "Playing?" button
+            // check if already exists
+            if ( $("#checkPlay" + team[i].name ).length ) {
+                // it does exist so update
+            } else {
+                // is doesn't exist so create
+                $('#buttonGrid')
+                    .append("<div id=\"ui-block-a" + team[i].name + "\" class=\"ui-block-a\">");
+                    //.append("<input type=\"checkbox\"  id=\"checkPlay" + team[i].name + "\" value=" + team[i].name + ">");
+                    //data-mini=\"true\"
+                $("#ui-block-a" + team[i].name)
+                    .append("<input type=\"checkbox\"  id=\"checkPlay" + team[i].name +
+                     "\" value=" + team[i].name + ">");
+                $("#checkPlay"+ team[i].name)
+                    .click({ name:  team[i].name }, actionPlayingFunction );
+            }
+
+            // second column is the "Name" button
+            // check if already exists
+            if ( $("#buttonName" + team[i].name ).length ) {
+                // it does exist so update
+            } else {
+                // is doesn't exist so create
+                $('#buttonGrid')
+                    .append("<div id=\"ui-block-b" + team[i].name + "\" class=\"ui-block-b\">");
+                    //.append("<input type=\"button\" class=\"ui-btn ui-corner-all ui-shadow\" id=\"buttonName" + team[i].name + "\" value=" + team[i].name + ">");
+                $("#ui-block-b" + team[i].name)
+                    .append("<input type=\"button\" class=\"ui-btn ui-corner-all ui-shadow\" id=\"buttonName" +
+                        team[i].name + "\" value=" + team[i].name + ">");
+                $("#buttonName"+ team[i].name)
+                    .click({ name:  team[i].name }, actionOffFunction );
+            }
+
+            $('#buttonGrid')
+                    .append("<div id=\"ui-block-c" + team[i].name + "\" class=\"ui-block-c\">")
+                    .append("<div id=\"ui-block-d" + team[i].name + "\" class=\"ui-block-d\">")
+                    .append("<div id=\"ui-block-e" + team[i].name + "\" class=\"ui-block-e\">");
+
+            // third, forth and fifth columns are for subsitutes and so only exist when a player is currently on
+            if (team[i].currentlyPlaying) {
+                // add possible subsitutes
+                for (var j = i, cnt = 0, added = 0; 
+                      cnt < team.length && added < 3;
+                      j = (j + 1)%team.length, cnt++) {
+                    if (team[j].playing && !team[j].currentlyPlaying) {
+                        // can be added as a subsistute
+                        added++;
+                        if (added == 1) {
+                            $("#ui-block-c" + team[i].name)
+                                .append("<input type=\"button\" class=\"ui-btn ui-corner-all ui-shadow\" id=\"buttonSub" +
+                                    added + team[j].name + "For" + team[i].name + "\" value=" + team[j].name + ">");
+                            //$("#buttonName"+ team[i].name)
+                            //    .click({ name:  team[i].name }, actionOffFunction );
+                        } else if (added == 2) {
+                            $("#ui-block-d" + team[i].name)
+                                .append("<input type=\"button\" class=\"ui-btn ui-corner-all ui-shadow\" id=\"buttonSub" +
+                                    added + team[j].name + "For" + team[i].name + "\" value=" + team[j].name + ">");
+                            //$("#buttonName"+ team[i].name)
+                            //    .click({ name:  team[i].name }, actionOffFunction );
+                        } else if (added == 3) {
+                            $("#ui-block-e" + team[i].name)
+                                .append("<input type=\"button\" class=\"ui-btn ui-corner-all ui-shadow\" id=\"buttonSub" +
+                                    added + team[j].name + "For" + team[i].name + "\" value=" + team[j].name + ">");
+                            //$("#buttonName"+ team[i].name)
+                            //    .click({ name:  team[i].name }, actionOffFunction );
+                        } else {
+                            alert("Too many subsitutes added: " + added);
+                        }
+                    }
+                }
+            } else {
+                // not currently playing so no subsistutes need to be displayed
+                // TODO remove this else
+            }
+
             if (team1.team[i].currentlyPlaying) {
                 //button(type="button" id= "button" + team1[i].name + "Off" onclick="actionOff(\""+ team1[i].name +"\")") team1[i].name
                 //var playButton = document.createElement('button');
