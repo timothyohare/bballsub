@@ -88,6 +88,25 @@ body(onload='createAndUpdateUI()')
 
             function actionPlaying(event) {
                 console.log("actionPlaying: " + event.data.name);
+                // find and set the currentlyPlaying to false for the player
+                playerArr = jQuery.grep(team1.team, function( n, i ) {
+                    return ( n.name === event.data.name );
+                });
+                
+                if (playerArr.length == 0) {
+                  alert("Couldn't find player " + event.data.name );
+                } else if (playerArr.length == 1) {
+                    if (event.target.checked) {
+                        playerArr[0].playing = true;
+                    } else {
+                        playerArr[0].playing = false;
+                    }
+                  
+                } else {
+                  alert("Found multiple (" + playerArr.length + ") players for " + event.data.name );
+                }
+
+                createAndUpdateUI();
             }
 
             var team1 =
@@ -152,6 +171,8 @@ body(onload='createAndUpdateUI()')
             function createAndUpdateUI() {
                 "use strict";
                 sortTeam();
+                // need to update the subs
+                $("[id^=buttonSub]").remove();
                 var team = team1.team
                 for (var i = 0; i < team.length; i++) {
                     // TODO grid layout http://api.jquerymobile.com/grid-layout/
@@ -255,7 +276,7 @@ body(onload='createAndUpdateUI()')
                         // TODO remove this else
                     }
 
-                    if (team1.team[i].currentlyPlaying) {
+                    /*if (team1.team[i].currentlyPlaying) {
                         //button(type="button" id= "button" + team1[i].name + "Off" onclick="actionOff(\""+ team1[i].name +"\")") team1[i].name
                         //var playButton = document.createElement('button');
                         //playButton.setAttribute('type','button');
@@ -278,7 +299,7 @@ body(onload='createAndUpdateUI()')
                         //var buttonDiv = document.getElementById("buttonDiv")
                         //buttonDiv.appendChild(playButton);
                         //$( "buttonDiv" ).append(playButton)
-                    }
+                    }*/
                 } 
             }
 
@@ -313,11 +334,7 @@ body(onload='createAndUpdateUI()')
                 } else {
                   alert("Found multiple (" + playerArr.length + ") players for " + event.data.name );
                 }
-
-
-                // need to update the subs
-                //$("#buttonSub").remove();
-                $("[id^=buttonSub]").remove();
+           
                 createAndUpdateUI();
             }
             /*function actionOff() {
