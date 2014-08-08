@@ -103,6 +103,22 @@ body(onload='createAndUpdateUI()')
                 //localStorage.setItem('testObject', JSON.stringify(personObject));
             }
 
+            function updateCurrentlyPlayingPlayer(player) {
+                "use strict";
+                if (player.playing && !player.currentlyPlaying) {
+                    player.currentlyPlaying = true;
+                    if (playTime.playing) {
+                        player.intervalStartTime = new Date();
+                    }
+                    
+                } else if (player.currentlyPlaying) {
+                    player.currentlyPlaying = false;
+                    if (playTime.playing) {
+                        var now = new Date();
+                        player.totalPlayingTime += (now - player.intervalStartTime);
+                    }
+                }
+            }
             function actionOff(event) {
                 "use strict";
                 console.log("actionOff: " + event.data.name);
@@ -113,7 +129,8 @@ body(onload='createAndUpdateUI()')
                 if (playerArr.length == 0) {
                   alert("Couldn't find player " + event.data.name );
                 } else if (playerArr.length == 1) {
-                    playerArr[0].currentlyPlaying = playerArr[0].currentlyPlaying ? false : true;
+                    updateCurrentlyPlayingPlayer(playerArr[0]);
+
                 } else {
                   alert("Found multiple (" + playerArr.length + ") players for " + event.data.name );
                 }
@@ -139,7 +156,8 @@ body(onload='createAndUpdateUI()')
 
             function actionPlaying(event) {
                 console.log("actionPlaying: " + event.data.name);
-                // find and set the currentlyPlaying to false for the player
+
+                // find and toggle the currentlyPlaying for the player
                 playerArr = jQuery.grep(team1.team, function( n, i ) {
                     return ( n.name === event.data.name );
                 });
@@ -151,6 +169,7 @@ body(onload='createAndUpdateUI()')
                         playerArr[0].playing = true;
                     } else {
                         playerArr[0].playing = false;
+                        playerArr[0].currentlyPlaying = false;
                     }
                   
                 } else {
@@ -168,48 +187,56 @@ body(onload='createAndUpdateUI()')
                     "name": "Julia",
                     "playing": false,
                     "currentlyPlaying": false,
+                    "intervalStartTime": 0,
                     "totalPlayingTime": 0
                 },
                 {
                     "name": "Tegan",
                     "playing": false,
                     "currentlyPlaying": false,
+                    "intervalStartTime": 0,
                     "totalPlayingTime": 0
                 },
                 {
                     "name": "Emily",
                     "playing": false,
                     "currentlyPlaying": false,
+                    "intervalStartTime": 0,
                     "totalPlayingTime": 0
                 },
                 {
                     "name": "Zahli",
                     "playing": false,
                     "currentlyPlaying": false,
+                    "intervalStartTime": 0,
                     "totalPlayingTime": 0
                 },
                 {
                     "name": "Joven",
                     "playing": false,
                     "currentlyPlaying": false,
+                    "intervalStartTime": 0,
                     "totalPlayingTime": 0
                 },
                 {
                     "name": "Irene",
                     "playing": false,
                     "currentlyPlaying": false,
+                    "intervalStartTime": 0,
                     "totalPlayingTime": 0
                 },
                 {
                     "name": "Abbey",
                     "playing": false,
                     "currentlyPlaying": false,
+                    "intervalStartTime": 0,
                     "totalPlayingTime": 0
                 },
                 {
                     "name": "Isabella",
                     "playing": false,
                     "currentlyPlaying": false,
+                    "intervalStartTime": 0,
                     "totalPlayingTime": 0
                 }
                     ]
@@ -287,8 +314,8 @@ body(onload='createAndUpdateUI()')
                             .append("<input type=\"button\" data-theme=\"a\" class=\"ui-btn ui-corner-all ui-shadow\" id=\"buttonName" +
                                 team[i].name + "\" value=" + team[i].name + ">")
                             //.append("<input type=\"text\" value=\"0:00\" id=\"playingTime\">");
-                            .append('<p id="playingTime">0:00</p>');
-                        $('#playingTime')
+                            .append("<p id=\"playingTime" + team[i].name + "\">0:00</p>");
+                        $("#playingTime" + team[i].name)
                             .css("float", "left");
                         $("#buttonName"+ team[i].name)
                             .click({ name:  team[i].name }, actionOff )
@@ -296,6 +323,7 @@ body(onload='createAndUpdateUI()')
                         
                         
                     }
+
                     // update the name colours
                     if (team[i].playing) {
                         if (team[i].currentlyPlaying) {
@@ -309,6 +337,12 @@ body(onload='createAndUpdateUI()')
                         $("#buttonName"+ team[i].name)
                             .css( "background-color", "grey" );
                     }
+
+                    var durationStr = moment.utc(team[i].totalPlayingTime).format("mm:ss");
+                    // update the playing time
+                    // TODO - doesn't currently work - totalPlayingTime quickly becomes a massive number
+                    //$("#playingTime" + team[i].name)
+                    //    .text(durationStr);
 
                     $('#buttonGrid')
                             .append("<div id=\"ui-block-c" + team[i].name + "\" class=\"ui-block-c\">")
@@ -398,7 +432,8 @@ body(onload='createAndUpdateUI()')
                 if (subArr.length == 0) {
                   alert("Couldn't find sub " + event.data.sub );
                 } else if (subArr.length == 1) {
-                  subArr[0].currentlyPlaying = true;
+                  //subArr[0].currentlyPlaying = true;
+                  updateCurrentlyPlayingPlayer(subArr[0]);
                 } else {
                   alert("Found multiple (" + subArr.length + ") subs for " + event.data.sub );
                 }
@@ -410,7 +445,8 @@ body(onload='createAndUpdateUI()')
                 if (playerArr.length == 0) {
                   alert("Couldn't find player " + event.data.name );
                 } else if (playerArr.length == 1) {
-                  playerArr[0].currentlyPlaying = false;
+                  //playerArr[0].currentlyPlaying = false;
+                  updateCurrentlyPlayingPlayer(playerArr[0]);
                 } else {
                   alert("Found multiple (" + playerArr.length + ") players for " + event.data.name );
                 }
@@ -427,3 +463,6 @@ body(onload='createAndUpdateUI()')
             // 4. grunt for mocha and jshint
             // 5. update Readme
             // 6. code coverage
+            // 7. make sure only 5 are playing at a time
+            // 8. store it back to mongodb/postgres
+            // 9. allow somewhere to update the team names
