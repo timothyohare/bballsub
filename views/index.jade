@@ -29,7 +29,7 @@ body(onload='createAndUpdateUI()')
       div(data-role="content" data-theme="a")  
          
           div(id="buttonDiv" class="ui-content")
-            input(type="button" class="ui-btn ui-corner-all ui-shadow" id="buttonPlayTime" value="Playing")
+            input(type="button" class="ui-btn ui-corner-all ui-shadow" id="buttonPlayTime" value="Playing" onclick="updateTime()")
             //input(type="text" id="textPlayTime" value="0:00:00")
             p(id="textPlayTime") 00:00
             div(id="buttonGrid" class="ui-grid-d")
@@ -44,6 +44,20 @@ body(onload='createAndUpdateUI()')
           
           
           script.
+            function updateTime(event) {
+                console.log("updateTime");
+                if (playTime.playing) {
+                    playTime.duration += (Date.now() - playTime.startTime);
+                    playTime.playing = false;
+                    $('#textPlayTime').text(playTime.duration);
+                    $('#buttonPlayTime').css( "background-color", "red" );
+                } else {
+                    playTime.startTime = Date.now();
+                    playTime.playing = true;
+                    $('#buttonPlayTime').css( "background-color", "green" );
+                }
+            }
+
             function actionOn(name) {
                 console.log("actionOn: " + name);
 
@@ -66,8 +80,23 @@ body(onload='createAndUpdateUI()')
                 //localStorage.setItem('testObject', JSON.stringify(personObject));
             }
 
-            var actionOffFunction = function actionOff(event) {
+            function actionOff(event) {
                 console.log("actionOff: " + event.data.name);
+                playerArr = jQuery.grep(team1.team, function( n, i ) {
+                    return ( n.name === event.data.name );
+                });
+                
+                if (playerArr.length == 0) {
+                  alert("Couldn't find player " + event.data.name );
+                } else if (playerArr.length == 1) {
+                    // TODO 
+                    alert("fix this");
+                    playerArr[0].currentlyPlaying = toggle;
+                } else {
+                  alert("Found multiple (" + playerArr.length + ") players for " + event.data.name );
+                }
+
+                createAndUpdateUI();
                 //event.stopPropagation();
                        // get references to both buttons
                 /*var onButton = document.getElementById("button" + name + "On");
@@ -109,6 +138,7 @@ body(onload='createAndUpdateUI()')
                 createAndUpdateUI();
             }
 
+            // TODO the "team" map can be removed
             var team1 =
             {
             "team": [
@@ -144,6 +174,14 @@ body(onload='createAndUpdateUI()')
                 }
                     ]
             };
+
+            // TODO startTime can be renamed to startDuration
+            var playTime = {
+                "startTime": 0.0,
+                "endTime" : 0.0,
+                "duration" : 0.0,
+                "playing": false
+            }
 
             function sortTeam() {
             
@@ -213,7 +251,7 @@ body(onload='createAndUpdateUI()')
                         $('#playingTime')
                             .css("float", "left");
                         $("#buttonName"+ team[i].name)
-                            .click({ name:  team[i].name }, actionOffFunction )
+                            .click({ name:  team[i].name }, actionOff )
                             .css( "float", "left");
                         if (team[i].playing) {
                             if (team[i].currentlyPlaying) {
