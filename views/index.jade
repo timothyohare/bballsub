@@ -53,12 +53,13 @@ body(onload='createAndUpdateUI()')
 
                     // milliseconds
                     var ms = playTime.duration;
-                    var x = ms / 1000;
+                    /*var x = ms / 1000;
                     var seconds = parseInt(x % 60);
                     x /= 60;
                     var minutes = parseInt(x % 60);
                     x /= 60;
                     var hours = parseInt(x % 24);
+                    */
                     // this won't pad the minutes and seconds :(
                     //var durationStr = " " + minutes + ":" + seconds;
                     var durationStr = moment.utc(ms).format("mm:ss");
@@ -103,17 +104,16 @@ body(onload='createAndUpdateUI()')
             }
 
             function actionOff(event) {
+                "use strict";
                 console.log("actionOff: " + event.data.name);
-                playerArr = jQuery.grep(team1.team, function( n, i ) {
+                var playerArr = jQuery.grep(team1.team, function( n, i ) {
                     return ( n.name === event.data.name );
                 });
                 
                 if (playerArr.length == 0) {
                   alert("Couldn't find player " + event.data.name );
                 } else if (playerArr.length == 1) {
-                    // TODO 
-                    alert("fix this");
-                    playerArr[0].currentlyPlaying = toggle;
+                    playerArr[0].currentlyPlaying = playerArr[0].currentlyPlaying ? false : true;
                 } else {
                   alert("Found multiple (" + playerArr.length + ") players for " + event.data.name );
                 }
@@ -166,27 +166,45 @@ body(onload='createAndUpdateUI()')
             "team": [
                 {
                     "name": "Julia",
-                    "playing": true,
+                    "playing": false,
                     "currentlyPlaying": false,
-                    "totalPlayingTime": 5
+                    "totalPlayingTime": 0
                 },
                 {
                     "name": "Tegan",
-                    "playing": true,
-                    "currentlyPlaying": true,
-                    "totalPlayingTime": 6
+                    "playing": false,
+                    "currentlyPlaying": false,
+                    "totalPlayingTime": 0
                 },
                 {
                     "name": "Emily",
-                    "playing": true,
-                    "currentlyPlaying": true,
-                    "totalPlayingTime": 4
+                    "playing": false,
+                    "currentlyPlaying": false,
+                    "totalPlayingTime": 0
                 },
                 {
                     "name": "Zahli",
-                    "playing": true,
+                    "playing": false,
                     "currentlyPlaying": false,
-                    "totalPlayingTime": 7
+                    "totalPlayingTime": 0
+                },
+                {
+                    "name": "Joven",
+                    "playing": false,
+                    "currentlyPlaying": false,
+                    "totalPlayingTime": 0
+                },
+                {
+                    "name": "Irene",
+                    "playing": false,
+                    "currentlyPlaying": false,
+                    "totalPlayingTime": 0
+                },
+                {
+                    "name": "Abbey",
+                    "playing": false,
+                    "currentlyPlaying": false,
+                    "totalPlayingTime": 0
                 },
                 {
                     "name": "Isabella",
@@ -275,19 +293,21 @@ body(onload='createAndUpdateUI()')
                         $("#buttonName"+ team[i].name)
                             .click({ name:  team[i].name }, actionOff )
                             .css( "float", "left");
-                        if (team[i].playing) {
-                            if (team[i].currentlyPlaying) {
-                                $("#buttonName"+ team[i].name)
-                                    .css( "background-color", "green" );
-                            } else {
-                                $("#buttonName"+ team[i].name)
-                                    .css( "background-color", "orange" );
-                            }
+                        
+                        
+                    }
+                    // update the name colours
+                    if (team[i].playing) {
+                        if (team[i].currentlyPlaying) {
+                            $("#buttonName"+ team[i].name)
+                                .css( "background-color", "green" );
                         } else {
                             $("#buttonName"+ team[i].name)
-                                .css( "background-color", "grey" );
+                                .css( "background-color", "orange" );
                         }
-                        
+                    } else {
+                        $("#buttonName"+ team[i].name)
+                            .css( "background-color", "grey" );
                     }
 
                     $('#buttonGrid')
