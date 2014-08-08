@@ -17,6 +17,7 @@ html
     
     script(src="http://code.jquery.com/jquery-1.11.1.min.js")
     script(src="http://code.jquery.com/mobile/1.4.3/jquery.mobile-1.4.3.min.js")
+    script(src="//cdnjs.cloudflare.com/ajax/libs/moment.js/2.7.0/moment.min.js")
 
 body(onload='createAndUpdateUI()')
   div(data-role="page" data-theme="a")
@@ -47,12 +48,33 @@ body(onload='createAndUpdateUI()')
             function updateTime(event) {
                 console.log("updateTime");
                 if (playTime.playing) {
-                    playTime.duration += (Date.now() - playTime.startTime);
+                    playTime.duration += (new Date() - playTime.startTime);
                     playTime.playing = false;
-                    $('#textPlayTime').text(playTime.duration);
+
+                    // milliseconds
+                    var ms = playTime.duration;
+                    var x = ms / 1000;
+                    var seconds = parseInt(x % 60);
+                    x /= 60;
+                    var minutes = parseInt(x % 60);
+                    x /= 60;
+                    var hours = parseInt(x % 24);
+                    // this won't pad the minutes and seconds :(
+                    //var durationStr = " " + minutes + ":" + seconds;
+                    var durationStr = moment.utc(ms).format("mm:ss");
+                    /* doesn't work because duration isn't a Date object and
+                       converting it back in to a Date object doesn't make sense
+                       
+                    var ms = new Date(playTime.duration);
+                    var options = {
+                        hour: "2-digit", minute: "2-digit", second: "2-digit"
+                    };
+                    var durationStr = ms.toLocaleTimeString("en-us", options);*/
+
+                    $('#textPlayTime').text(durationStr);
                     $('#buttonPlayTime').css( "background-color", "red" );
                 } else {
-                    playTime.startTime = Date.now();
+                    playTime.startTime = new Date();
                     playTime.playing = true;
                     $('#buttonPlayTime').css( "background-color", "green" );
                 }
