@@ -1,11 +1,69 @@
-function updateTime(event) {
-    console.log("updateTime");
+// http://stackoverflow.com/questions/10470825/how-to-make-javascript-time-automatically-update
+function updateTime(){
+    /*var currentTime = new Date()
+    var hours = currentTime.getHours()
+    var minutes = currentTime.getMinutes()
+    if (minutes < 10){
+        minutes = "0" + minutes
+    }
+    var t_str = hours + ":" + minutes + " ";*/
+    /*if(hours > 11){
+        t_str += "PM";
+    } else {
+        t_str += "AM";
+    }*/
+
+    //playTime.duration += (new Date() - playTime.startTime);
+    playTime.duration += 1000;
+    
+
+    // milliseconds
+    //var ms = playTime.duration;
+    /*var x = ms / 1000;
+    var seconds = parseInt(x % 60);
+    x /= 60;
+    var minutes = parseInt(x % 60);
+    x /= 60;
+    var hours = parseInt(x % 24);
+    */
+    // this won't pad the minutes and seconds :(
+    //var durationStr = " " + minutes + ":" + seconds;
+    var durationStr = moment.utc(playTime.duration).format("mm:ss");
+    /* doesn't work because duration isn't a Date object and
+       converting it back in to a Date object doesn't make sense
+       
+    var ms = new Date(playTime.duration);
+    var options = {
+        hour: "2-digit", minute: "2-digit", second: "2-digit"
+    };
+    var durationStr = ms.toLocaleTimeString("en-us", options);*/
+
+    $('#textPlayTime').text(durationStr);
+    
+    //$("#labelTime" + team[i].name).innerHTML = t_str;
+    var team = team1.team;
+    for (var i = 0; i < team.length; i++) {
+        if (team[i].currentlyPlaying) {
+            team[i].totalPlayingTime += 1000;
+            var durationStr = moment.utc(team[i].totalPlayingTime).format("mm:ss");
+            // update the playing time
+            $("#labelTime" + team[i].name)
+                .text(durationStr);
+        }
+    }
+}
+// to kick it off- setInterval(updateTime, 1000);
+
+// to cancel - window.clearInterval()
+var updateTimeInterval;
+function togglePlayingTime(event) {
+    //console.log("updateTime");
     if (playTime.playing) {
-        playTime.duration += (new Date() - playTime.startTime);
-        playTime.playing = false;
+        //playTime.duration += (new Date() - playTime.startTime);
+        //playTime.playing = false;
 
         // milliseconds
-        var ms = playTime.duration;
+        //var ms = playTime.duration;
         /*var x = ms / 1000;
         var seconds = parseInt(x % 60);
         x /= 60;
@@ -15,7 +73,7 @@ function updateTime(event) {
         */
         // this won't pad the minutes and seconds :(
         //var durationStr = " " + minutes + ":" + seconds;
-        var durationStr = moment.utc(ms).format("mm:ss");
+        //var durationStr = moment.utc(ms).format("mm:ss");
         /* doesn't work because duration isn't a Date object and
            converting it back in to a Date object doesn't make sense
            
@@ -25,12 +83,15 @@ function updateTime(event) {
         };
         var durationStr = ms.toLocaleTimeString("en-us", options);*/
 
-        $('#textPlayTime').text(durationStr);
+        //$('#textPlayTime').text(durationStr);
+        playTime.playing = false;
         $('#buttonPlayTime').css( "background-color", "red" );
+        clearInterval(updateTimeInterval);
     } else {
         playTime.startTime = new Date();
         playTime.playing = true;
         $('#buttonPlayTime').css( "background-color", "green" );
+        updateTimeInterval = setInterval(updateTime, 1000);
     }
 }
 
@@ -38,16 +99,16 @@ function updateCurrentlyPlayingPlayer(player) {
     "use strict";
     if (player.playing && !player.currentlyPlaying) {
         player.currentlyPlaying = true;
-        if (playTime.playing) {
+        /*if (playTime.playing) {
             player.intervalStartTime = new Date();
-        }
+        }*/
         
     } else if (player.currentlyPlaying) {
         player.currentlyPlaying = false;
-        if (playTime.playing) {
+        /*if (playTime.playing) {
             var now = new Date();
             player.totalPlayingTime += (now - player.intervalStartTime);
-        }
+        }*/
     }
 }
 function actionOff(event) {
@@ -57,9 +118,9 @@ function actionOff(event) {
         return ( n.name === event.data.name );
     });
     
-    if (playerArr.length == 0) {
+    if (playerArr.length === 0) {
       alert("Couldn't find player " + event.data.name );
-    } else if (playerArr.length == 1) {
+    } else if (playerArr.length === 1) {
         updateCurrentlyPlayingPlayer(playerArr[0]);
 
     } else {
@@ -67,7 +128,7 @@ function actionOff(event) {
     }
 
     createAndUpdateUI();
-};
+}
 
 function actionPlaying(event) {
     console.log("actionPlaying: " + event.data.name);
@@ -77,9 +138,9 @@ function actionPlaying(event) {
         return ( n.name === event.data.name );
     });
     
-    if (playerArr.length == 0) {
+    if (playerArr.length === 0) {
       alert("Couldn't find player " + event.data.name );
-    } else if (playerArr.length == 1) {
+    } else if (playerArr.length === 1) {
         if (event.target.checked) {
             playerArr[0].playing = true;
         } else {
@@ -163,7 +224,7 @@ var playTime = {
     "endTime" : 0.0,
     "duration" : 0.0,
     "playing": false
-}
+};
 
 function sortTeam() {
 
@@ -188,35 +249,14 @@ function sortTeam() {
   console.log(team1);
 }
 
-// http://stackoverflow.com/questions/10470825/how-to-make-javascript-time-automatically-update
-function updateTime(){
-    var currentTime = new Date()
-    var hours = currentTime.getHours()
-    var minutes = currentTime.getMinutes()
-    if (minutes < 10){
-        minutes = "0" + minutes
-    }
-    var t_str = hours + ":" + minutes + " ";
-    /*if(hours > 11){
-        t_str += "PM";
-    } else {
-        t_str += "AM";
-    }*/
 
-
-    
-    $("#labelTime" + team[i].name).innerHTML = t_str;
-}
-// to kick it off- setInterval(updateTime, 1000);
-
-// to cancel - window.clearInterval()
 
 function createAndUpdateUI() {
     "use strict";
     sortTeam();
     // need to update the subs
     $("[id^=buttonSub]").remove();
-    var team = team1.team
+    var team = team1.team;
     for (var i = 0; i < team.length; i++) {
         // TODO grid layout http://api.jquerymobile.com/grid-layout/
         
@@ -229,7 +269,7 @@ function createAndUpdateUI() {
             $('#buttonGrid')
                 .append("<div id=\"ui-block-a" + team[i].name + "\" class=\"ui-block-a\">");
             $("#ui-block-a" + team[i].name)
-                .append("<label id=\"labelPlaying" + team[i].name + "\">")
+                .append("<label id=\"labelPlaying" + team[i].name + "\">");
             $("#labelPlaying" + team[i].name)
                 .append("<input type=\"checkbox\" data-mini=\"true\"  id=\"checkPlay" + team[i].name +
                  "\">")
@@ -276,10 +316,10 @@ function createAndUpdateUI() {
                 .css( "background-color", "grey" );
         }
 
-        var durationStr = moment.utc(team[i].totalPlayingTime).format("mm:ss");
+        //var durationStr = moment.utc(team[i].totalPlayingTime).format("mm:ss");
         // update the playing time
         // TODO - doesn't currently work - totalPlayingTime quickly becomes a massive number
-        //$("#playingTime" + team[i].name)
+        //$("#labelTime" + team[i].name)
         //    .text(durationStr);
 
         $('#buttonGrid')
@@ -297,21 +337,21 @@ function createAndUpdateUI() {
                     // can be added as a subsistute
                     added++;
                     // The only reason for the "if" statement is to add it to the correct column (/grid/block) e.g. ui-block-c
-                    if (added == 1) {
+                    if (added === 1) {
                         $("#ui-block-c" + team[i].name)
                             //.append("<input type=\"button\" class=\"ui-btn ui-corner-all ui-shadow\" id=\"buttonSub\" value=" + team[j].name + ">");
                             .append("<input type=\"button\" data-mini=\"true\" class=\"ui-btn ui-corner-all ui-shadow\" id=\"buttonSub" +
                                 added + team[i].name + "\" value=" + team[j].name + ">");
                         $("#buttonSub"+ added + team[i].name)
                             .click({ name:  team[i].name, sub: team[j].name }, actionSwitchPlayers );
-                    } else if (added == 2) {
+                    } else if (added === 2) {
                         $("#ui-block-d" + team[i].name)
                             //.append("<input type=\"button\" class=\"ui-btn ui-corner-all ui-shadow\" id=\"buttonSub\" value=" + team[j].name + ">");
                             .append("<input type=\"button\" data-mini=\"true\" class=\"ui-btn ui-corner-all ui-shadow\" id=\"buttonSub" +
                                 added + team[i].name + "\" value=" + team[j].name + ">");
                         $("#buttonSub"+ added + team[i].name)
                             .click({ name:  team[i].name, sub: team[j].name }, actionSwitchPlayers );
-                    } else if (added == 3) {
+                    } else if (added === 3) {
                         $("#ui-block-e" + team[i].name)
                             //.append("<input type=\"button\" class=\"ui-btn ui-corner-all ui-shadow\" id=\"buttonSub\" value=" + team[j].name + ">");
                             .append("<input type=\"button\" data-mini=\"true\" class=\"ui-btn ui-corner-all ui-shadow\" id=\"buttonSub" +
@@ -339,9 +379,9 @@ function actionSwitchPlayers (event) {
     subArr = jQuery.grep(team1.team, function( n, i ) {
         return ( n.name === event.data.sub );
     });
-    if (subArr.length == 0) {
+    if (subArr.length === 0) {
       alert("Couldn't find sub " + event.data.sub );
-    } else if (subArr.length == 1) {
+    } else if (subArr.length === 1) {
       //subArr[0].currentlyPlaying = true;
       updateCurrentlyPlayingPlayer(subArr[0]);
     } else {
@@ -352,9 +392,9 @@ function actionSwitchPlayers (event) {
     playerArr = jQuery.grep(team1.team, function( n, i ) {
         return ( n.name === event.data.name );
     });
-    if (playerArr.length == 0) {
+    if (playerArr.length === 0) {
       alert("Couldn't find player " + event.data.name );
-    } else if (playerArr.length == 1) {
+    } else if (playerArr.length === 1) {
       //playerArr[0].currentlyPlaying = false;
       updateCurrentlyPlayingPlayer(playerArr[0]);
     } else {
