@@ -34,28 +34,6 @@ function updateTime(event) {
     }
 }
 
-function actionOn(name) {
-    console.log("actionOn: " + name);
-
-    // get references to both buttons
-    var onButton = document.getElementById("button" + name + "On");
-    var offButton = document.getElementById("button" + name + "Off");
-
-    // set the style
-    onButton.style.backgroundColor = "red";
-    offButton.style.backgroundColor = "green";
-
-    // enable/disable the buttons
-    onButton.enabled = false;
-    offButton.enabled = true;
-
-    // save details in session storage
-    //sessionStorage.name = Date();
-    //var personObject = {'name': name, 'timeOn': Date()};
-    // Store the object as a JSON String
-    //localStorage.setItem('testObject', JSON.stringify(personObject));
-}
-
 function updateCurrentlyPlayingPlayer(player) {
     "use strict";
     if (player.playing && !player.currentlyPlaying) {
@@ -89,22 +67,6 @@ function actionOff(event) {
     }
 
     createAndUpdateUI();
-    //event.stopPropagation();
-           // get references to both buttons
-    /*var onButton = document.getElementById("button" + name + "On");
-    var offButton = document.getElementById("button" + name + "Off");
-
-    // set the style
-    onButton.style.backgroundColor = "green";
-    offButton.style.backgroundColor = "red";
-
-    // enable/disable the buttons
-    onButton.enabled = true;
-    offButton.enabled = false;
-    */
-    // save details in session storage
-    //sessionStorage.name = Date();
-    //sessionStorage.
 };
 
 function actionPlaying(event) {
@@ -226,6 +188,29 @@ function sortTeam() {
   console.log(team1);
 }
 
+// http://stackoverflow.com/questions/10470825/how-to-make-javascript-time-automatically-update
+function updateTime(){
+    var currentTime = new Date()
+    var hours = currentTime.getHours()
+    var minutes = currentTime.getMinutes()
+    if (minutes < 10){
+        minutes = "0" + minutes
+    }
+    var t_str = hours + ":" + minutes + " ";
+    /*if(hours > 11){
+        t_str += "PM";
+    } else {
+        t_str += "AM";
+    }*/
+
+
+    
+    $("#labelTime" + team[i].name).innerHTML = t_str;
+}
+// to kick it off- setInterval(updateTime, 1000);
+
+// to cancel - window.clearInterval()
+
 function createAndUpdateUI() {
     "use strict";
     sortTeam();
@@ -243,15 +228,17 @@ function createAndUpdateUI() {
             // is doesn't exist so create
             $('#buttonGrid')
                 .append("<div id=\"ui-block-a" + team[i].name + "\" class=\"ui-block-a\">");
-                //.append("<input type=\"checkbox\"  id=\"checkPlay" + team[i].name + "\" value=" + team[i].name + ">");
-                //data-mini=\"true\"
             $("#ui-block-a" + team[i].name)
                 .append("<label id=\"labelPlaying" + team[i].name + "\">")
             $("#labelPlaying" + team[i].name)
-                .append("<input type=\"checkbox\"  id=\"checkPlay" + team[i].name +
-                 "\" value=" + team[i].name + ">");
+                .append("<input type=\"checkbox\" data-mini=\"true\"  id=\"checkPlay" + team[i].name +
+                 "\">")
+                .append("<label for=\"checkPlay" + team[i].name + "\" id=\"labelTime" + team[i].name + "\">0:00</label>");
             $("#checkPlay"+ team[i].name)
-                .click({ name:  team[i].name }, actionPlaying );
+                .click({ name:  team[i].name }, actionPlaying )
+                .css("float", "left");
+            $("#labelTime" + team[i].name)
+                .css("float", "left");
         }
 
         // second column is the "Name" button
@@ -262,12 +249,10 @@ function createAndUpdateUI() {
             // is doesn't exist so create
             $('#buttonGrid')
                 .append("<div id=\"ui-block-b" + team[i].name + "\" class=\"ui-block-b\">");
-                //.append("<input type=\"button\" class=\"ui-btn ui-corner-all ui-shadow\" id=\"buttonName" + team[i].name + "\" value=" + team[i].name + ">");
             $("#ui-block-b" + team[i].name)
-                .append("<input type=\"button\" data-theme=\"a\" class=\"ui-btn ui-corner-all ui-shadow\" id=\"buttonName" +
-                    team[i].name + "\" value=" + team[i].name + ">")
-                //.append("<input type=\"text\" value=\"0:00\" id=\"playingTime\">");
-                .append("<p id=\"playingTime" + team[i].name + "\">0:00</p>");
+                .append("<input type=\"button\" data-theme=\"a\" data-mini=\"true\" class=\"ui-btn ui-corner-all ui-shadow\" id=\"buttonName" +
+                    team[i].name + "\" value=" + team[i].name + ">");
+                //removed in an attempt to fit it all in .append("<p id=\"playingTime" + team[i].name + "\">0:00</p>");
             $("#playingTime" + team[i].name)
                 .css("float", "left");
             $("#buttonName"+ team[i].name)
@@ -315,21 +300,21 @@ function createAndUpdateUI() {
                     if (added == 1) {
                         $("#ui-block-c" + team[i].name)
                             //.append("<input type=\"button\" class=\"ui-btn ui-corner-all ui-shadow\" id=\"buttonSub\" value=" + team[j].name + ">");
-                            .append("<input type=\"button\" class=\"ui-btn ui-corner-all ui-shadow\" id=\"buttonSub" +
+                            .append("<input type=\"button\" data-mini=\"true\" class=\"ui-btn ui-corner-all ui-shadow\" id=\"buttonSub" +
                                 added + team[i].name + "\" value=" + team[j].name + ">");
                         $("#buttonSub"+ added + team[i].name)
                             .click({ name:  team[i].name, sub: team[j].name }, actionSwitchPlayers );
                     } else if (added == 2) {
                         $("#ui-block-d" + team[i].name)
                             //.append("<input type=\"button\" class=\"ui-btn ui-corner-all ui-shadow\" id=\"buttonSub\" value=" + team[j].name + ">");
-                            .append("<input type=\"button\" class=\"ui-btn ui-corner-all ui-shadow\" id=\"buttonSub" +
+                            .append("<input type=\"button\" data-mini=\"true\" class=\"ui-btn ui-corner-all ui-shadow\" id=\"buttonSub" +
                                 added + team[i].name + "\" value=" + team[j].name + ">");
                         $("#buttonSub"+ added + team[i].name)
                             .click({ name:  team[i].name, sub: team[j].name }, actionSwitchPlayers );
                     } else if (added == 3) {
                         $("#ui-block-e" + team[i].name)
                             //.append("<input type=\"button\" class=\"ui-btn ui-corner-all ui-shadow\" id=\"buttonSub\" value=" + team[j].name + ">");
-                            .append("<input type=\"button\" class=\"ui-btn ui-corner-all ui-shadow\" id=\"buttonSub" +
+                            .append("<input type=\"button\" data-mini=\"true\" class=\"ui-btn ui-corner-all ui-shadow\" id=\"buttonSub" +
                                 added + team[i].name + "\" value=" + team[j].name + ">");
                         $("#buttonSub"+ added + team[i].name)
                             .click({ name:  team[i].name, sub: team[j].name }, actionSwitchPlayers );
@@ -338,35 +323,7 @@ function createAndUpdateUI() {
                     }
                 }
             }
-        } else {
-            // not currently playing so no subsistutes need to be displayed
-            // TODO remove this else
         }
-
-        /*if (team1.team[i].currentlyPlaying) {
-            //button(type="button" id= "button" + team1[i].name + "Off" onclick="actionOff(\""+ team1[i].name +"\")") team1[i].name
-            //var playButton = document.createElement('button');
-            //playButton.setAttribute('type','button');
-            //playButton.setAttribute('id',"button" + team1[i].name + "Off");
-            //playButton.setAttribute('value',team1[i].name);
-            //playButton.attachEvent('onclick',"actionOff(\""+ team1[i].name +"\")");
-
-            $("#buttonDiv")
-                .append("<div class=\"ui-grid-d\"") 
-                .append("<input type=\"button\" class=\"ui-btn ui-corner-all ui-shadow\" id=\"butOn" + team1.team[i].name + "\" value=" + team1.team[i].name + ">");
-            // Adding a click handler at the same time causes the click handler to be called for every
-            // button, when only one is clicked. Adding it afterwards fixes this problem.
-                //.click({ name:  team1.team[i].name }, actionOffFunction ); // Add a click handler
-                //.click({ name:  team1.team[i].name }, function (event) { alert (event.data.name); } ); // Add a click handler
-                //.click(function () { alert ("1"); } );
-            $("#butOn"+ team1.team[i].name)
-                .click({ name:  team1.team[i].name }, actionOffFunction );        
-            
-
-            //var buttonDiv = document.getElementById("buttonDiv")
-            //buttonDiv.appendChild(playButton);
-            //$( "buttonDiv" ).append(playButton)
-        }*/
     } 
 }
 
@@ -417,5 +374,5 @@ function actionSwitchPlayers (event) {
 // 5. update Readme
 // 6. code coverage
 // 7. make sure only 5 are playing at a time
-// 8. store it back to mongodb/postgres
+// 8. store the times and subsitutions back to mongodb/postgres
 // 9. allow somewhere to update the team names

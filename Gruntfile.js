@@ -1,5 +1,7 @@
 // http://us6.campaign-archive2.com/?u=2cc20705b76fa66ab84a6634f&id=7d6ccb80f1&e=9ee9f5b57b
 // https://www.npmjs.org/package/grunt-complexity
+// https://github.com/taichi/grunt-istanbul
+// https://www.npmjs.org/package/grunt-mocha-cov
 
 module.exports = function(grunt) {
     // Load the jshint plugin
