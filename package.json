@@ -17,7 +17,7 @@
   "description": "Basketball Subsitution",
   "main": "app.js",
   "devDependencies": {
-    "grunt": "^1.5.3",
+    "grunt": "^1.6.3",
     "grunt-complexity": "^0.2.0",
     "grunt-contrib-jshint": "^3.2.0",
     "grunt-contrib-watch": "^1.1.0"
